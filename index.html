@@ -16,6 +16,8 @@
       --accent-soft: rgba(31, 111, 235, 0.1);
       --danger: #cf222e;
       --danger-soft: rgba(207, 34, 46, 0.1);
+      --star: #d97706;
+      --star-soft: rgba(217, 119, 6, 0.12);
       --radius: 10px;
       --shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
@@ -31,6 +33,8 @@
       --accent-soft: rgba(88, 166, 255, 0.14);
       --danger: #f85149;
       --danger-soft: rgba(248, 81, 73, 0.14);
+      --star: #fbbf24;
+      --star-soft: rgba(251, 191, 36, 0.15);
       --shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
     }
 
@@ -97,7 +101,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: background 0.15s ease, border-color 0.15s ease;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     }
 
     button:hover {
@@ -130,6 +134,30 @@
       border-color: var(--accent);
       color: var(--accent);
       font-weight: 500;
+    }
+
+    button.fav-active {
+      background: var(--star-soft);
+      border-color: var(--star);
+      color: var(--star);
+      font-weight: 500;
+    }
+
+    .star-btn {
+      padding: 4px 8px;
+      font-size: 1rem;
+      line-height: 1;
+      border-color: transparent;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .star-btn:hover {
+      background: var(--surface-2);
+    }
+
+    .star-btn.is-fav {
+      color: var(--star);
     }
 
     input, select {
@@ -227,13 +255,13 @@
     /* Μπάρα εργαλείων αναζήτησης & φίλτρων */
     .toolbar {
       display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr auto;
+      grid-template-columns: 1.4fr 1fr 1fr auto auto;
       gap: 10px;
       align-items: center;
       margin-bottom: 18px;
     }
 
-    @media (max-width: 820px) {
+    @media (max-width: 960px) {
       .toolbar {
         grid-template-columns: 1fr 1fr;
       }
@@ -253,7 +281,7 @@
     /* Προβολή Καρτών */
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
       gap: 14px;
     }
 
@@ -267,6 +295,17 @@
       flex-direction: column;
       justify-content: space-between;
       gap: 12px;
+    }
+
+    .card.is-fav-card {
+      border-color: var(--star);
+    }
+
+    .card-header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
     }
 
     .card-title {
@@ -309,7 +348,7 @@
     .kv-list {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 7px;
       font-size: 0.85rem;
       border-top: 1px solid var(--border);
       padding-top: 10px;
@@ -318,17 +357,48 @@
     .kv-item {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
+      align-items: center;
+      gap: 8px;
     }
 
     .kv-key {
       color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .kv-val-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 5px;
+      flex-wrap: wrap;
+      text-align: right;
     }
 
     .kv-val {
       font-weight: 500;
-      text-align: right;
       word-break: break-word;
+    }
+
+    .mini-action {
+      font-size: 0.74rem;
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      line-height: 1.3;
+    }
+
+    .mini-action:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
     }
 
     .card-footer {
@@ -372,6 +442,12 @@
       border-bottom: none;
     }
 
+    .cell-flex {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .empty-state {
       text-align: center;
       padding: 44px 20px;
@@ -408,7 +484,7 @@
       <div class="panel-title">Πεδία &amp; Στήλες</div>
       <div class="custom-fields-bar" id="fieldsBar"></div>
       <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
-        <input type="text" id="newFieldInput" placeholder="Νέο πεδίο / στήλη (π.χ. Τιμή, Τηλέφωνο, Σημειώσεις)" style="flex:1; min-width:220px;" />
+        <input type="text" id="newFieldInput" placeholder="Νέο πεδίο / στήλη (π.χ. Τηλέφωνο, Email, Διεύθυνση)" style="flex:1; min-width:220px;" />
         <button type="button" id="addFieldBtn">+ Προσθήκη στήλης</button>
       </div>
     </section>
@@ -421,7 +497,7 @@
         <div class="form-actions">
           <button type="submit" class="primary" id="submitEntryBtn">Αποθήκευση καταχώρισης</button>
           <button type="button" id="cancelEditBtn" style="display:none;">Ακύρωση</button>
-          <span class="status-note" id="formHint">Τα πεδία «Όνομα» και «Κατάστημα» είναι πάντα διαθέσιμα.</span>
+          <span class="status-note" id="formHint">Μόνο το πεδίο «Όνομα» είναι πάντα σταθερό.</span>
         </div>
       </form>
     </section>
@@ -437,8 +513,8 @@
         <option value="oldest">Ταξινόμηση: Παλαιότερα πρώτα</option>
         <option value="name-asc">Όνομα (Α–Ω)</option>
         <option value="name-desc">Όνομα (Ω–Α)</option>
-        <option value="store-asc">Κατάστημα (Α–Ω)</option>
       </select>
+      <button type="button" id="favFilterBtn" title="Προβολή μόνο αγαπημένων">★ Αγαπημένα</button>
       <div class="view-toggle">
         <button type="button" id="cardsViewBtn" class="active-view">Κάρτες</button>
         <button type="button" id="tableViewBtn">Πίνακας</button>
@@ -453,18 +529,26 @@
     const STORAGE_KEY_DATA = "personal_entries_data_v1";
     const STORAGE_KEY_FIELDS = "personal_entries_fields_v1";
     const STORAGE_KEY_THEME = "personal_entries_theme_v1";
+    const STORAGE_KEY_PREFS = "personal_entries_prefs_v1";
+    const STORAGE_KEY_REMOVED_OPTIONAL_CORE = "personal_entries_removed_core_v1";
 
-    const CORE_FIELDS = [
-      { key: "name", label: "Όνομα", locked: true, required: true },
-      { key: "store", label: "Κατάστημα", locked: true, required: false },
+    const LOCKED_CORE_FIELDS = [
+      { key: "name", label: "Όνομα", locked: true, required: true }
+    ];
+
+    const OPTIONAL_CORE_FIELDS = [
+      { key: "store", label: "Κατάστημα", locked: false, required: false },
       { key: "category", label: "Κατηγορία", locked: false, required: false },
       { key: "tags", label: "Ετικέτες", locked: false, required: false }
     ];
 
+    let removedOptionalCoreKeys = loadRemovedOptionalCoreKeys();
     let customFields = loadCustomFields();
     let entries = loadEntries();
     let editingId = null;
-    let viewMode = "cards";
+    let prefs = loadPrefs();
+    let viewMode = prefs.viewMode || "cards";
+    let onlyFavorites = Boolean(prefs.onlyFavorites);
 
     const els = {
       themeToggleBtn: document.getElementById("themeToggleBtn"),
@@ -480,6 +564,7 @@
       searchInput: document.getElementById("searchInput"),
       categoryFilter: document.getElementById("categoryFilter"),
       sortSelect: document.getElementById("sortSelect"),
+      favFilterBtn: document.getElementById("favFilterBtn"),
       cardsViewBtn: document.getElementById("cardsViewBtn"),
       tableViewBtn: document.getElementById("tableViewBtn"),
       resultsContainer: document.getElementById("resultsContainer"),
@@ -489,8 +574,23 @@
       importFileInput: document.getElementById("importFileInput")
     };
 
+    function loadRemovedOptionalCoreKeys() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_REMOVED_OPTIONAL_CORE);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function getActiveOptionalCoreFields() {
+      return OPTIONAL_CORE_FIELDS.filter((f) => !removedOptionalCoreKeys.includes(f.key));
+    }
+
     function getAllFields() {
-      return [...CORE_FIELDS, ...customFields];
+      return [...LOCKED_CORE_FIELDS, ...getActiveOptionalCoreFields(), ...customFields];
     }
 
     function loadCustomFields() {
@@ -515,16 +615,40 @@
       }
     }
 
+    function loadPrefs() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_PREFS);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" ? parsed : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function savePrefs() {
+      prefs = {
+        viewMode,
+        onlyFavorites,
+        sort: els.sortSelect.value,
+        categoryFilter: els.categoryFilter.value
+      };
+      localStorage.setItem(STORAGE_KEY_PREFS, JSON.stringify(prefs));
+    }
+
     function saveState() {
       localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(entries));
       localStorage.setItem(STORAGE_KEY_FIELDS, JSON.stringify(customFields));
+      localStorage.setItem(STORAGE_KEY_REMOVED_OPTIONAL_CORE, JSON.stringify(removedOptionalCoreKeys));
       updateSummary();
     }
 
     function updateSummary() {
       const count = entries.length;
+      const favCount = entries.filter((e) => e.favorite).length;
       const word = count === 1 ? "καταχώριση" : "καταχωρίσεις";
-      els.summaryText.textContent = `${count} ${word} · Αποθηκεύεται αυτόματα`;
+      const favText = favCount > 0 ? ` · ${favCount} αγαπημένα` : "";
+      els.summaryText.textContent = `${count} ${word}${favText} · Αποθηκεύεται αυτόματα`;
     }
 
     function initTheme() {
@@ -556,7 +680,7 @@
         labelSpan.textContent = field.label + (field.key === "name" ? " *" : "");
         pill.appendChild(labelSpan);
 
-        if (field.key !== "name" && field.key !== "store") {
+        if (field.key !== "name") {
           const removeBtn = document.createElement("button");
           removeBtn.type = "button";
           removeBtn.title = "Αφαίρεση πεδίου";
@@ -581,27 +705,38 @@
         return;
       }
 
-      customFields.push({
-        key: slugifyField(label),
-        label,
-        locked: false,
-        required: false
-      });
+      const matchingRemovedOptional = OPTIONAL_CORE_FIELDS.find(
+        (f) => f.label.toLowerCase() === label.toLowerCase() && removedOptionalCoreKeys.includes(f.key)
+      );
+
+      if (matchingRemovedOptional) {
+        removedOptionalCoreKeys = removedOptionalCoreKeys.filter((k) => k !== matchingRemovedOptional.key);
+      } else {
+        customFields.push({
+          key: slugifyField(label),
+          label,
+          locked: false,
+          required: false
+        });
+      }
 
       els.newFieldInput.value = "";
       saveState();
       renderFieldsBar();
       renderFormInputs(collectFormValues());
+      refreshCategoryFilter();
       renderResults();
     }
 
     function removeField(key, label) {
+      if (key === "name") return;
       if (!confirm(`Να αφαιρεθεί το πεδίο «${label}»; Οι αποθηκευμένες τιμές του θα διαγραφούν.`)) return;
 
-      const coreIndex = CORE_FIELDS.findIndex((f) => f.key === key);
-      if (coreIndex !== -1) {
-        // Για core προαιρετικά πεδία (Κατηγορία, Ετικέτες), αρκεί να καθαρίσουμε τις τιμές αν θέλει ο χρήστης,
-        // ή τα αφήνουμε στα φίλτρα. Εδώ αφαιρούμε από customFields ή καθαρίζουμε.
+      const isOptionalCore = OPTIONAL_CORE_FIELDS.some((f) => f.key === key);
+      if (isOptionalCore) {
+        if (!removedOptionalCoreKeys.includes(key)) {
+          removedOptionalCoreKeys.push(key);
+        }
       } else {
         customFields = customFields.filter((f) => f.key !== key);
       }
@@ -672,6 +807,14 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    function toggleFavorite(id) {
+      entries = entries.map((item) =>
+        item.id === id ? { ...item, favorite: !item.favorite } : item
+      );
+      saveState();
+      renderResults();
+    }
+
     function deleteEntry(id) {
       if (!confirm("Να διαγραφεί οριστικά αυτή η καταχώριση;")) return;
       entries = entries.filter((e) => e.id !== id);
@@ -697,6 +840,7 @@
         entries.unshift({
           id: "ent_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
           values,
+          favorite: false,
           createdAt: Date.now(),
           updatedAt: Date.now()
         });
@@ -717,7 +861,7 @@
     }
 
     function refreshCategoryFilter() {
-      const current = els.categoryFilter.value;
+      const current = els.categoryFilter.value || prefs.categoryFilter || "";
       const optionsSet = new Set();
 
       entries.forEach((e) => {
@@ -756,6 +900,8 @@
       let list = entries.filter((entry) => {
         const vals = entry.values || {};
 
+        if (onlyFavorites && !entry.favorite) return false;
+
         if (filterVal) {
           if (filterVal.startsWith("cat:")) {
             const targetCat = filterVal.slice(4);
@@ -784,8 +930,6 @@
             return (va.name || "").localeCompare(vb.name || "", "el");
           case "name-desc":
             return (vb.name || "").localeCompare(va.name || "", "el");
-          case "store-asc":
-            return (va.store || "").localeCompare(vb.store || "", "el");
           case "newest":
           default:
             return (b.createdAt || 0) - (a.createdAt || 0);
@@ -793,6 +937,79 @@
       });
 
       return list;
+    }
+
+    function copyText(text, btnEl) {
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        const prev = btnEl.textContent;
+        btnEl.textContent = "✓";
+        setTimeout(() => {
+          btnEl.textContent = prev;
+        }, 1100);
+      }).catch(() => {});
+    }
+
+    function buildSmartActions(fieldLabel, value) {
+      const actions = [];
+      const labelLower = (fieldLabel || "").toLowerCase();
+      const valTrim = (value || "").trim();
+      if (!valTrim) return actions;
+
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valTrim) || labelLower.includes("email") || labelLower.includes("mail");
+      const digitsOnly = valTrim.replace(/[\s\-().]/g, "");
+      const isPhone =
+        (/^\+?\d{7,15}$/.test(digitsOnly)) ||
+        labelLower.includes("τηλ") ||
+        labelLower.includes("κιν") ||
+        labelLower.includes("phone") ||
+        labelLower.includes("tel");
+      const isAddress =
+        labelLower.includes("διεύθυνση") ||
+        labelLower.includes("διευθυνση") ||
+        labelLower.includes("οδός") ||
+        labelLower.includes("οδος") ||
+        labelLower.includes("περιοχή") ||
+        labelLower.includes("πόλη") ||
+        labelLower.includes("address");
+
+      if (isEmail) {
+        const a = document.createElement("a");
+        a.className = "mini-action";
+        a.href = `mailto:${encodeURIComponent(valTrim)}`;
+        a.textContent = "Email";
+        a.title = "Αποστολή email";
+        actions.push(a);
+      } else if (isPhone && digitsOnly.length >= 5) {
+        const a = document.createElement("a");
+        a.className = "mini-action";
+        a.href = `tel:${digitsOnly}`;
+        a.textContent = "Κλήση";
+        a.title = "Άμεση κλήση";
+        actions.push(a);
+      } else if (isAddress) {
+        const a = document.createElement("a");
+        a.className = "mini-action";
+        a.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(valTrim)}`;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = "Χάρτης";
+        a.title = "Άνοιγμα στους Χάρτες Google";
+        actions.push(a);
+      }
+
+      const copyBtn = document.createElement("button");
+      copyBtn.type = "button";
+      copyBtn.className = "mini-action";
+      copyBtn.textContent = "Αντιγραφή";
+      copyBtn.title = "Αντιγραφή τιμής";
+      copyBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        copyText(valTrim, copyBtn);
+      });
+      actions.push(copyBtn);
+
+      return actions;
     }
 
     function renderResults() {
@@ -821,6 +1038,7 @@
       const grid = document.createElement("div");
       grid.className = "cards-grid";
 
+      const isStoreActive = getAllFields().some((f) => f.key === "store");
       const extraFields = getAllFields().filter(
         (f) => !["name", "store", "category", "tags"].includes(f.key)
       );
@@ -828,19 +1046,34 @@
       list.forEach((entry) => {
         const vals = entry.values || {};
         const card = document.createElement("article");
-        card.className = "card";
+        card.className = "card" + (entry.favorite ? " is-fav-card" : "");
 
         const top = document.createElement("div");
+
+        const headerRow = document.createElement("div");
+        headerRow.className = "card-header-row";
 
         const title = document.createElement("h3");
         title.className = "card-title";
         title.textContent = vals.name || "Χωρίς όνομα";
-        top.appendChild(title);
 
-        const store = document.createElement("div");
-        store.className = "card-store";
-        store.textContent = vals.store ? `Κατάστημα: ${vals.store}` : "Χωρίς κατάστημα";
-        top.appendChild(store);
+        const favBtn = document.createElement("button");
+        favBtn.type = "button";
+        favBtn.className = "star-btn" + (entry.favorite ? " is-fav" : "");
+        favBtn.textContent = entry.favorite ? "★" : "☆";
+        favBtn.title = entry.favorite ? "Αφαίρεση από αγαπημένα" : "Προσθήκη στα αγαπημένα";
+        favBtn.addEventListener("click", () => toggleFavorite(entry.id));
+
+        headerRow.appendChild(title);
+        headerRow.appendChild(favBtn);
+        top.appendChild(headerRow);
+
+        if (isStoreActive && vals.store) {
+          const store = document.createElement("div");
+          store.className = "card-store";
+          store.textContent = `Κατάστημα: ${vals.store}`;
+          top.appendChild(store);
+        }
 
         const tags = parseTags(vals.tags);
         if (vals.category || tags.length > 0) {
@@ -868,14 +1101,23 @@
           populatedExtras.forEach((f) => {
             const row = document.createElement("div");
             row.className = "kv-item";
+
             const k = document.createElement("span");
             k.className = "kv-key";
             k.textContent = f.label;
+
+            const vWrap = document.createElement("div");
+            vWrap.className = "kv-val-wrap";
+
             const v = document.createElement("span");
             v.className = "kv-val";
             v.textContent = vals[f.key];
+            vWrap.appendChild(v);
+
+            buildSmartActions(f.label, vals[f.key]).forEach((act) => vWrap.appendChild(act));
+
             row.appendChild(k);
-            row.appendChild(v);
+            row.appendChild(vWrap);
             kvList.appendChild(row);
           });
           top.appendChild(kvList);
@@ -915,6 +1157,10 @@
       const headRow = document.createElement("tr");
       const fields = getAllFields();
 
+      const favTh = document.createElement("th");
+      favTh.textContent = "★";
+      headRow.appendChild(favTh);
+
       fields.forEach((f) => {
         const th = document.createElement("th");
         th.textContent = f.label;
@@ -931,9 +1177,33 @@
         const vals = entry.values || {};
         const tr = document.createElement("tr");
 
+        const favTd = document.createElement("td");
+        const favBtn = document.createElement("button");
+        favBtn.type = "button";
+        favBtn.className = "star-btn" + (entry.favorite ? " is-fav" : "");
+        favBtn.textContent = entry.favorite ? "★" : "☆";
+        favBtn.title = entry.favorite ? "Αφαίρεση από αγαπημένα" : "Προσθήκη στα αγαπημένα";
+        favBtn.addEventListener("click", () => toggleFavorite(entry.id));
+        favTd.appendChild(favBtn);
+        tr.appendChild(favTd);
+
         fields.forEach((f) => {
           const td = document.createElement("td");
-          td.textContent = vals[f.key] || "—";
+          const val = vals[f.key] || "";
+          if (!val) {
+            td.textContent = "—";
+          } else {
+            const cellWrap = document.createElement("div");
+            cellWrap.className = "cell-flex";
+            const span = document.createElement("span");
+            span.textContent = val;
+            cellWrap.appendChild(span);
+
+            if (!["name", "store", "category", "tags"].includes(f.key)) {
+              buildSmartActions(f.label, val).forEach((act) => cellWrap.appendChild(act));
+            }
+            td.appendChild(cellWrap);
+          }
           tr.appendChild(td);
         });
 
@@ -965,6 +1235,7 @@
       const payload = {
         exportedAt: new Date().toISOString(),
         customFields,
+        removedOptionalCoreKeys,
         entries
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
@@ -981,10 +1252,13 @@
         return str;
       };
 
-      const headerLine = fields.map((f) => escapeCsv(f.label)).join(",");
+      const headerLine = ["Αγαπημένο", ...fields.map((f) => f.label)].map(escapeCsv).join(",");
       const rows = entries.map((entry) => {
         const vals = entry.values || {};
-        return fields.map((f) => escapeCsv(vals[f.key] || "")).join(",");
+        return [
+          entry.favorite ? "Ναι" : "Όχι",
+          ...fields.map((f) => vals[f.key] || "")
+        ].map(escapeCsv).join(",");
       });
 
       const csvContent = "\uFEFF" + [headerLine, ...rows].join("\n");
@@ -1041,6 +1315,7 @@
             entries.push({
               id: newId,
               values: item.values,
+              favorite: Boolean(item.favorite),
               createdAt: item.createdAt || Date.now(),
               updatedAt: item.updatedAt || Date.now()
             });
@@ -1063,6 +1338,24 @@
       reader.readAsText(file);
     }
 
+    function applyPrefsToUI() {
+      if (prefs.sort && Array.from(els.sortSelect.options).some((o) => o.value === prefs.sort)) {
+        els.sortSelect.value = prefs.sort;
+      }
+      if (viewMode === "table") {
+        els.tableViewBtn.classList.add("active-view");
+        els.cardsViewBtn.classList.remove("active-view");
+      } else {
+        els.cardsViewBtn.classList.add("active-view");
+        els.tableViewBtn.classList.remove("active-view");
+      }
+      if (onlyFavorites) {
+        els.favFilterBtn.classList.add("fav-active");
+      } else {
+        els.favFilterBtn.classList.remove("fav-active");
+      }
+    }
+
     // Συνδέσεις συμβάντων
     els.themeToggleBtn.addEventListener("click", () => {
       const current = document.documentElement.getAttribute("data-theme");
@@ -1081,13 +1374,27 @@
     els.cancelEditBtn.addEventListener("click", resetForm);
 
     els.searchInput.addEventListener("input", renderResults);
-    els.categoryFilter.addEventListener("change", renderResults);
-    els.sortSelect.addEventListener("change", renderResults);
+    els.categoryFilter.addEventListener("change", () => {
+      savePrefs();
+      renderResults();
+    });
+    els.sortSelect.addEventListener("change", () => {
+      savePrefs();
+      renderResults();
+    });
+
+    els.favFilterBtn.addEventListener("click", () => {
+      onlyFavorites = !onlyFavorites;
+      els.favFilterBtn.classList.toggle("fav-active", onlyFavorites);
+      savePrefs();
+      renderResults();
+    });
 
     els.cardsViewBtn.addEventListener("click", () => {
       viewMode = "cards";
       els.cardsViewBtn.classList.add("active-view");
       els.tableViewBtn.classList.remove("active-view");
+      savePrefs();
       renderResults();
     });
 
@@ -1095,6 +1402,7 @@
       viewMode = "table";
       els.tableViewBtn.classList.add("active-view");
       els.cardsViewBtn.classList.remove("active-view");
+      savePrefs();
       renderResults();
     });
 
@@ -1105,6 +1413,7 @@
 
     // Αρχικοποίηση
     initTheme();
+    applyPrefsToUI();
     updateSummary();
     renderFieldsBar();
     renderFormInputs({});
