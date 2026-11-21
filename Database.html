@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="el" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Καταχωρίσεις — Προσωπικός Κατάλογος</title>
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --surface-2: #f1f3f5;
+      --text: #18191b;
+      --muted: #5f6368;
+      --border: #e2e5e9;
+      --accent: #1f6feb;
+      --accent-soft: rgba(31, 111, 235, 0.1);
+      --danger: #cf222e;
+      --danger-soft: rgba(207, 34, 46, 0.1);
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f1115;
+      --surface: #171a21;
+      --surface-2: #1f242d;
+      --text: #eceef2;
+      --muted: #9aa0a8;
+      --border: #2a2f3a;
+      --accent: #58a6ff;
+      --accent-soft: rgba(88, 166, 255, 0.14);
+      --danger: #f85149;
+      --danger-soft: rgba(248, 81, 73, 0.14);
+      --shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 28px 20px 64px;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button, input, select {
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    button:hover {
+      background: var(--surface-2);
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    button.primary:hover {
+      opacity: 0.92;
+    }
+
+    button.danger {
+      color: var(--danger);
+      border-color: transparent;
+      background: transparent;
+    }
+
+    button.danger:hover {
+      background: var(--danger-soft);
+    }
+
+    button.active-view {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    input, select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 11px;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+
+    .panel-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 0 0 14px;
+    }
+
+    /* Δυναμικά πεδία / στήλες */
+    .custom-fields-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .field-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.82rem;
+    }
+
+    .field-pill.locked {
+      opacity: 0.8;
+    }
+
+    .field-pill button {
+      padding: 0 2px;
+      border: none;
+      background: none;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1;
+    }
+
+    .field-pill button:hover {
+      color: var(--danger);
+      background: none;
+    }
+
+    /* Φόρμα καταχώρισης */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field-group label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    /* Μπάρα εργαλείων αναζήτησης & φίλτρων */
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 820px) {
+      .toolbar {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .view-toggle {
+      display: inline-flex;
+      gap: 6px;
+    }
+
+    /* Προβολή Καρτών */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+
+    .card-store {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .kv-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+    }
+
+    .kv-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .kv-key {
+      color: var(--muted);
+    }
+
+    .kv-val {
+      font-weight: 500;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+    }
+
+    /* Προβολή Πίνακα */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow-x: auto;
+      box-shadow: var(--shadow);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th, td {
+      padding: 11px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    th {
+      background: var(--surface-2);
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 44px 20px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+
+    .status-note {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Καταχωρίσεις</h1>
+        <div class="subtitle" id="summaryText">0 καταχωρίσεις · Αποθηκεύεται αυτόματα</div>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="exportJsonBtn">Εξαγωγή JSON</button>
+        <button type="button" id="exportCsvBtn">Εξαγωγή CSV</button>
+        <button type="button" id="importJsonBtn">Εισαγωγή JSON</button>
+        <input type="file" id="importFileInput" accept=".json,application/json" hidden />
+        <button type="button" id="themeToggleBtn" aria-label="Αλλαγή θέματος">Σκούρο θέμα</button>
+      </div>
+    </header>
+
+    <!-- Δυναμικές στήλες / πεδία -->
+    <section class="panel">
+      <div class="panel-title">Πεδία &amp; Στήλες</div>
+      <div class="custom-fields-bar" id="fieldsBar"></div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
+        <input type="text" id="newFieldInput" placeholder="Νέο πεδίο / στήλη (π.χ. Τιμή, Τηλέφωνο, Σημειώσεις)" style="flex:1; min-width:220px;" />
+        <button type="button" id="addFieldBtn">+ Προσθήκη στήλης</button>
+      </div>
+    </section>
+
+    <!-- Φόρμα νέας / επεξεργασίας καταχώρισης -->
+    <section class="panel">
+      <div class="panel-title" id="formTitle">Νέα καταχώριση</div>
+      <form id="entryForm">
+        <div class="form-grid" id="dynamicFormGrid"></div>
+        <div class="form-actions">
+          <button type="submit" class="primary" id="submitEntryBtn">Αποθήκευση καταχώρισης</button>
+          <button type="button" id="cancelEditBtn" style="display:none;">Ακύρωση</button>
+          <span class="status-note" id="formHint">Τα πεδία «Όνομα» και «Κατάστημα» είναι πάντα διαθέσιμα.</span>
+        </div>
+      </form>
+    </section>
+
+    <!-- Αναζήτηση, φίλτρα, ταξινόμηση, προβολή -->
+    <div class="toolbar">
+      <input type="search" id="searchInput" placeholder="Αναζήτηση με λέξεις-κλειδιά..." />
+      <select id="categoryFilter">
+        <option value="">Όλες οι κατηγορίες / ετικέτες</option>
+      </select>
+      <select id="sortSelect">
+        <option value="newest">Ταξινόμηση: Νεότερα πρώτα</option>
+        <option value="oldest">Ταξινόμηση: Παλαιότερα πρώτα</option>
+        <option value="name-asc">Όνομα (Α–Ω)</option>
+        <option value="name-desc">Όνομα (Ω–Α)</option>
+        <option value="store-asc">Κατάστημα (Α–Ω)</option>
+      </select>
+      <div class="view-toggle">
+        <button type="button" id="cardsViewBtn" class="active-view">Κάρτες</button>
+        <button type="button" id="tableViewBtn">Πίνακας</button>
+      </div>
+    </div>
+
+    <!-- Περιοχή αποτελεσμάτων -->
+    <main id="resultsContainer"></main>
+  </div>
+
+  <script>
+    const STORAGE_KEY_DATA = "personal_entries_data_v1";
+    const STORAGE_KEY_FIELDS = "personal_entries_fields_v1";
+    const STORAGE_KEY_THEME = "personal_entries_theme_v1";
+
+    const CORE_FIELDS = [
+      { key: "name", label: "Όνομα", locked: true, required: true },
+      { key: "store", label: "Κατάστημα", locked: true, required: false },
+      { key: "category", label: "Κατηγορία", locked: false, required: false },
+      { key: "tags", label: "Ετικέτες", locked: false, required: false }
+    ];
+
+    let customFields = loadCustomFields();
+    let entries = loadEntries();
+    let editingId = null;
+    let viewMode = "cards";
+
+    const els = {
+      themeToggleBtn: document.getElementById("themeToggleBtn"),
+      summaryText: document.getElementById("summaryText"),
+      fieldsBar: document.getElementById("fieldsBar"),
+      newFieldInput: document.getElementById("newFieldInput"),
+      addFieldBtn: document.getElementById("addFieldBtn"),
+      formTitle: document.getElementById("formTitle"),
+      entryForm: document.getElementById("entryForm"),
+      dynamicFormGrid: document.getElementById("dynamicFormGrid"),
+      submitEntryBtn: document.getElementById("submitEntryBtn"),
+      cancelEditBtn: document.getElementById("cancelEditBtn"),
+      searchInput: document.getElementById("searchInput"),
+      categoryFilter: document.getElementById("categoryFilter"),
+      sortSelect: document.getElementById("sortSelect"),
+      cardsViewBtn: document.getElementById("cardsViewBtn"),
+      tableViewBtn: document.getElementById("tableViewBtn"),
+      resultsContainer: document.getElementById("resultsContainer"),
+      exportJsonBtn: document.getElementById("exportJsonBtn"),
+      exportCsvBtn: document.getElementById("exportCsvBtn"),
+      importJsonBtn: document.getElementById("importJsonBtn"),
+      importFileInput: document.getElementById("importFileInput")
+    };
+
+    function getAllFields() {
+      return [...CORE_FIELDS, ...customFields];
+    }
+
+    function loadCustomFields() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_FIELDS);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function loadEntries() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_DATA);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(entries));
+      localStorage.setItem(STORAGE_KEY_FIELDS, JSON.stringify(customFields));
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const count = entries.length;
+      const word = count === 1 ? "καταχώριση" : "καταχωρίσεις";
+      els.summaryText.textContent = `${count} ${word} · Αποθηκεύεται αυτόματα`;
+    }
+
+    function initTheme() {
+      const saved = localStorage.getItem(STORAGE_KEY_THEME) || "light";
+      applyTheme(saved);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem(STORAGE_KEY_THEME, theme);
+      els.themeToggleBtn.textContent = theme === "dark" ? "Φωτεινό θέμα" : "Σκούρο θέμα";
+    }
+
+    function slugifyField(label) {
+      const base = label
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9α-ωάέήίόύώ]+/gi, "_")
+        .replace(/^_+|_+$/g, "");
+      return "cf_" + (base || "field") + "_" + Math.random().toString(36).slice(2, 6);
+    }
+
+    function renderFieldsBar() {
+      els.fieldsBar.innerHTML = "";
+      getAllFields().forEach((field) => {
+        const pill = document.createElement("span");
+        pill.className = "field-pill" + (field.locked ? " locked" : "");
+        const labelSpan = document.createElement("span");
+        labelSpan.textContent = field.label + (field.key === "name" ? " *" : "");
+        pill.appendChild(labelSpan);
+
+        if (field.key !== "name" && field.key !== "store") {
+          const removeBtn = document.createElement("button");
+          removeBtn.type = "button";
+          removeBtn.title = "Αφαίρεση πεδίου";
+          removeBtn.textContent = "×";
+          removeBtn.addEventListener("click", () => removeField(field.key, field.label));
+          pill.appendChild(removeBtn);
+        }
+
+        els.fieldsBar.appendChild(pill);
+      });
+    }
+
+    function addField() {
+      const label = els.newFieldInput.value.trim();
+      if (!label) return;
+
+      const exists = getAllFields().some(
+        (f) => f.label.toLowerCase() === label.toLowerCase()
+      );
+      if (exists) {
+        alert("Υπάρχει ήδη πεδίο με αυτό το όνομα.");
+        return;
+      }
+
+      customFields.push({
+        key: slugifyField(label),
+        label,
+        locked: false,
+        required: false
+      });
+
+      els.newFieldInput.value = "";
+      saveState();
+      renderFieldsBar();
+      renderFormInputs(collectFormValues());
+      renderResults();
+    }
+
+    function removeField(key, label) {
+      if (!confirm(`Να αφαιρεθεί το πεδίο «${label}»; Οι αποθηκευμένες τιμές του θα διαγραφούν.`)) return;
+
+      const coreIndex = CORE_FIELDS.findIndex((f) => f.key === key);
+      if (coreIndex !== -1) {
+        // Για core προαιρετικά πεδία (Κατηγορία, Ετικέτες), αρκεί να καθαρίσουμε τις τιμές αν θέλει ο χρήστης,
+        // ή τα αφήνουμε στα φίλτρα. Εδώ αφαιρούμε από customFields ή καθαρίζουμε.
+      } else {
+        customFields = customFields.filter((f) => f.key !== key);
+      }
+
+      entries = entries.map((item) => {
+        const copy = { ...item, values: { ...item.values } };
+        delete copy.values[key];
+        return copy;
+      });
+
+      saveState();
+      renderFieldsBar();
+      renderFormInputs(collectFormValues());
+      refreshCategoryFilter();
+      renderResults();
+    }
+
+    function renderFormInputs(values = {}) {
+      els.dynamicFormGrid.innerHTML = "";
+      getAllFields().forEach((field) => {
+        const group = document.createElement("div");
+        group.className = "field-group";
+
+        const label = document.createElement("label");
+        label.setAttribute("for", "input_" + field.key);
+        label.textContent = field.label + (field.required ? " *" : "");
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.id = "input_" + field.key;
+        input.dataset.key = field.key;
+        input.value = values[field.key] || "";
+        if (field.required) input.required = true;
+        if (field.key === "tags") {
+          input.placeholder = "π.χ. επείγον, προσφορά";
+        }
+
+        group.appendChild(label);
+        group.appendChild(input);
+        els.dynamicFormGrid.appendChild(group);
+      });
+    }
+
+    function collectFormValues() {
+      const result = {};
+      els.dynamicFormGrid.querySelectorAll("input[data-key]").forEach((inp) => {
+        result[inp.dataset.key] = inp.value.trim();
+      });
+      return result;
+    }
+
+    function resetForm() {
+      editingId = null;
+      els.formTitle.textContent = "Νέα καταχώριση";
+      els.submitEntryBtn.textContent = "Αποθήκευση καταχώρισης";
+      els.cancelEditBtn.style.display = "none";
+      renderFormInputs({});
+    }
+
+    function startEdit(id) {
+      const entry = entries.find((e) => e.id === id);
+      if (!entry) return;
+      editingId = id;
+      els.formTitle.textContent = "Επεξεργασία καταχώρισης";
+      els.submitEntryBtn.textContent = "Ενημέρωση καταχώρισης";
+      els.cancelEditBtn.style.display = "inline-flex";
+      renderFormInputs(entry.values || {});
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function deleteEntry(id) {
+      if (!confirm("Να διαγραφεί οριστικά αυτή η καταχώριση;")) return;
+      entries = entries.filter((e) => e.id !== id);
+      if (editingId === id) resetForm();
+      saveState();
+      refreshCategoryFilter();
+      renderResults();
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const values = collectFormValues();
+      if (!values.name) return;
+
+      if (editingId) {
+        entries = entries.map((item) =>
+          item.id === editingId
+            ? { ...item, values, updatedAt: Date.now() }
+            : item
+        );
+        resetForm();
+      } else {
+        entries.unshift({
+          id: "ent_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+          values,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        });
+        renderFormInputs({});
+      }
+
+      saveState();
+      refreshCategoryFilter();
+      renderResults();
+    }
+
+    function parseTags(rawTags) {
+      if (!rawTags) return [];
+      return rawTags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+    }
+
+    function refreshCategoryFilter() {
+      const current = els.categoryFilter.value;
+      const optionsSet = new Set();
+
+      entries.forEach((e) => {
+        const cat = (e.values?.category || "").trim();
+        if (cat) optionsSet.add("cat:" + cat);
+        parseTags(e.values?.tags).forEach((tag) => optionsSet.add("tag:" + tag));
+      });
+
+      els.categoryFilter.innerHTML = '<option value="">Όλες οι κατηγορίες / ετικέτες</option>';
+
+      const sorted = Array.from(optionsSet).sort((a, b) =>
+        a.slice(4).localeCompare(b.slice(4), "el")
+      );
+
+      sorted.forEach((token) => {
+        const isTag = token.startsWith("tag:");
+        const val = token.slice(4);
+        const opt = document.createElement("option");
+        opt.value = token;
+        opt.textContent = isTag ? `Ετικέτα: ${val}` : `Κατηγορία: ${val}`;
+        els.categoryFilter.appendChild(opt);
+      });
+
+      if (Array.from(els.categoryFilter.options).some((o) => o.value === current)) {
+        els.categoryFilter.value = current;
+      } else {
+        els.categoryFilter.value = "";
+      }
+    }
+
+    function getFilteredAndSortedEntries() {
+      const q = els.searchInput.value.trim().toLowerCase();
+      const filterVal = els.categoryFilter.value;
+      const sortVal = els.sortSelect.value;
+
+      let list = entries.filter((entry) => {
+        const vals = entry.values || {};
+
+        if (filterVal) {
+          if (filterVal.startsWith("cat:")) {
+            const targetCat = filterVal.slice(4);
+            if ((vals.category || "").trim() !== targetCat) return false;
+          } else if (filterVal.startsWith("tag:")) {
+            const targetTag = filterVal.slice(4);
+            if (!parseTags(vals.tags).includes(targetTag)) return false;
+          }
+        }
+
+        if (q) {
+          const allText = Object.values(vals).join(" ").toLowerCase();
+          if (!allText.includes(q)) return false;
+        }
+
+        return true;
+      });
+
+      list.sort((a, b) => {
+        const va = a.values || {};
+        const vb = b.values || {};
+        switch (sortVal) {
+          case "oldest":
+            return (a.createdAt || 0) - (b.createdAt || 0);
+          case "name-asc":
+            return (va.name || "").localeCompare(vb.name || "", "el");
+          case "name-desc":
+            return (vb.name || "").localeCompare(va.name || "", "el");
+          case "store-asc":
+            return (va.store || "").localeCompare(vb.store || "", "el");
+          case "newest":
+          default:
+            return (b.createdAt || 0) - (a.createdAt || 0);
+        }
+      });
+
+      return list;
+    }
+
+    function renderResults() {
+      const list = getFilteredAndSortedEntries();
+      els.resultsContainer.innerHTML = "";
+
+      if (list.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent =
+          entries.length === 0
+            ? "Δεν υπάρχουν καταχωρίσεις ακόμη. Συμπλήρωσε τη φόρμα παραπάνω για να ξεκινήσεις."
+            : "Δεν βρέθηκαν καταχωρίσεις που να ταιριάζουν στα φίλτρα.";
+        els.resultsContainer.appendChild(empty);
+        return;
+      }
+
+      if (viewMode === "cards") {
+        renderCards(list);
+      } else {
+        renderTable(list);
+      }
+    }
+
+    function renderCards(list) {
+      const grid = document.createElement("div");
+      grid.className = "cards-grid";
+
+      const extraFields = getAllFields().filter(
+        (f) => !["name", "store", "category", "tags"].includes(f.key)
+      );
+
+      list.forEach((entry) => {
+        const vals = entry.values || {};
+        const card = document.createElement("article");
+        card.className = "card";
+
+        const top = document.createElement("div");
+
+        const title = document.createElement("h3");
+        title.className = "card-title";
+        title.textContent = vals.name || "Χωρίς όνομα";
+        top.appendChild(title);
+
+        const store = document.createElement("div");
+        store.className = "card-store";
+        store.textContent = vals.store ? `Κατάστημα: ${vals.store}` : "Χωρίς κατάστημα";
+        top.appendChild(store);
+
+        const tags = parseTags(vals.tags);
+        if (vals.category || tags.length > 0) {
+          const meta = document.createElement("div");
+          meta.className = "meta-row";
+          if (vals.category) {
+            const badge = document.createElement("span");
+            badge.className = "badge";
+            badge.textContent = vals.category;
+            meta.appendChild(badge);
+          }
+          tags.forEach((t) => {
+            const tagEl = document.createElement("span");
+            tagEl.className = "tag";
+            tagEl.textContent = "#" + t;
+            meta.appendChild(tagEl);
+          });
+          top.appendChild(meta);
+        }
+
+        const populatedExtras = extraFields.filter((f) => vals[f.key]);
+        if (populatedExtras.length > 0) {
+          const kvList = document.createElement("div");
+          kvList.className = "kv-list";
+          populatedExtras.forEach((f) => {
+            const row = document.createElement("div");
+            row.className = "kv-item";
+            const k = document.createElement("span");
+            k.className = "kv-key";
+            k.textContent = f.label;
+            const v = document.createElement("span");
+            v.className = "kv-val";
+            v.textContent = vals[f.key];
+            row.appendChild(k);
+            row.appendChild(v);
+            kvList.appendChild(row);
+          });
+          top.appendChild(kvList);
+        }
+
+        const footer = document.createElement("div");
+        footer.className = "card-footer";
+
+        const editBtn = document.createElement("button");
+        editBtn.type = "button";
+        editBtn.textContent = "Επεξεργασία";
+        editBtn.addEventListener("click", () => startEdit(entry.id));
+
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "danger";
+        delBtn.textContent = "Διαγραφή";
+        delBtn.addEventListener("click", () => deleteEntry(entry.id));
+
+        footer.appendChild(editBtn);
+        footer.appendChild(delBtn);
+
+        card.appendChild(top);
+        card.appendChild(footer);
+        grid.appendChild(card);
+      });
+
+      els.resultsContainer.appendChild(grid);
+    }
+
+    function renderTable(list) {
+      const wrap = document.createElement("div");
+      wrap.className = "table-wrap";
+
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      const headRow = document.createElement("tr");
+      const fields = getAllFields();
+
+      fields.forEach((f) => {
+        const th = document.createElement("th");
+        th.textContent = f.label;
+        headRow.appendChild(th);
+      });
+      const actionsTh = document.createElement("th");
+      actionsTh.textContent = "Ενέργειες";
+      headRow.appendChild(actionsTh);
+      thead.appendChild(headRow);
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+      list.forEach((entry) => {
+        const vals = entry.values || {};
+        const tr = document.createElement("tr");
+
+        fields.forEach((f) => {
+          const td = document.createElement("td");
+          td.textContent = vals[f.key] || "—";
+          tr.appendChild(td);
+        });
+
+        const actTd = document.createElement("td");
+        const editBtn = document.createElement("button");
+        editBtn.type = "button";
+        editBtn.textContent = "Επεξεργασία";
+        editBtn.style.marginRight = "6px";
+        editBtn.addEventListener("click", () => startEdit(entry.id));
+
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "danger";
+        delBtn.textContent = "Διαγραφή";
+        delBtn.addEventListener("click", () => deleteEntry(entry.id));
+
+        actTd.appendChild(editBtn);
+        actTd.appendChild(delBtn);
+        tr.appendChild(actTd);
+        tbody.appendChild(tr);
+      });
+
+      table.appendChild(tbody);
+      wrap.appendChild(table);
+      els.resultsContainer.appendChild(wrap);
+    }
+
+    function exportJson() {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        customFields,
+        entries
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      downloadBlob(blob, "katachoriseis-backup.json");
+    }
+
+    function exportCsv() {
+      const fields = getAllFields();
+      const escapeCsv = (val) => {
+        const str = String(val ?? "");
+        if (str.includes('"') || str.includes(",") || str.includes("\n")) {
+          return '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+      };
+
+      const headerLine = fields.map((f) => escapeCsv(f.label)).join(",");
+      const rows = entries.map((entry) => {
+        const vals = entry.values || {};
+        return fields.map((f) => escapeCsv(vals[f.key] || "")).join(",");
+      });
+
+      const csvContent = "\uFEFF" + [headerLine, ...rows].join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      downloadBlob(blob, "katachoriseis.csv");
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function handleImportFile(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(String(reader.result));
+          if (!parsed || !Array.isArray(parsed.entries)) {
+            alert("Το αρχείο JSON δεν έχει έγκυρη δομή καταχωρίσεων.");
+            return;
+          }
+
+          if (Array.isArray(parsed.customFields)) {
+            const existingKeys = new Set(customFields.map((f) => f.key));
+            const existingLabels = new Set(getAllFields().map((f) => f.label.toLowerCase()));
+            parsed.customFields.forEach((f) => {
+              if (f && f.key && f.label && !existingKeys.has(f.key) && !existingLabels.has(f.label.toLowerCase())) {
+                customFields.push({
+                  key: f.key,
+                  label: f.label,
+                  locked: false,
+                  required: false
+                });
+                existingKeys.add(f.key);
+              }
+            });
+          }
+
+          const existingIds = new Set(entries.map((e) => e.id));
+          let added = 0;
+          parsed.entries.forEach((item) => {
+            if (!item || !item.values) return;
+            const newId = existingIds.has(item.id)
+              ? "ent_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7)
+              : (item.id || "ent_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7));
+
+            entries.push({
+              id: newId,
+              values: item.values,
+              createdAt: item.createdAt || Date.now(),
+              updatedAt: item.updatedAt || Date.now()
+            });
+            existingIds.add(newId);
+            added++;
+          });
+
+          saveState();
+          renderFieldsBar();
+          renderFormInputs(collectFormValues());
+          refreshCategoryFilter();
+          renderResults();
+          alert(`Εισήχθησαν ${added} καταχωρίσεις.`);
+        } catch {
+          alert("Σφάλμα κατά την ανάγνωση του αρχείου JSON.");
+        } finally {
+          els.importFileInput.value = "";
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Συνδέσεις συμβάντων
+    els.themeToggleBtn.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      applyTheme(current === "dark" ? "light" : "dark");
+    });
+
+    els.addFieldBtn.addEventListener("click", addField);
+    els.newFieldInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addField();
+      }
+    });
+
+    els.entryForm.addEventListener("submit", handleFormSubmit);
+    els.cancelEditBtn.addEventListener("click", resetForm);
+
+    els.searchInput.addEventListener("input", renderResults);
+    els.categoryFilter.addEventListener("change", renderResults);
+    els.sortSelect.addEventListener("change", renderResults);
+
+    els.cardsViewBtn.addEventListener("click", () => {
+      viewMode = "cards";
+      els.cardsViewBtn.classList.add("active-view");
+      els.tableViewBtn.classList.remove("active-view");
+      renderResults();
+    });
+
+    els.tableViewBtn.addEventListener("click", () => {
+      viewMode = "table";
+      els.tableViewBtn.classList.add("active-view");
+      els.cardsViewBtn.classList.remove("active-view");
+      renderResults();
+    });
+
+    els.exportJsonBtn.addEventListener("click", exportJson);
+    els.exportCsvBtn.addEventListener("click", exportCsv);
+    els.importJsonBtn.addEventListener("click", () => els.importFileInput.click());
+    els.importFileInput.addEventListener("change", handleImportFile);
+
+    // Αρχικοποίηση
+    initTheme();
+    updateSummary();
+    renderFieldsBar();
+    renderFormInputs({});
+    refreshCategoryFilter();
+    renderResults();
+  </script>
+</body>
+</html>
